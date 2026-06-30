@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Placed Successfully – mealKart{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-card glass-panel fade-in text-center">
+        <div class="success-icon-wrapper animate-bounce">
+            <i class="fa-solid fa-circle-check text-success"></i>
+        </div>
+        
+        <h2>Order Placed Successfully!</h2>
+        <p class="success-desc">Thank you for ordering with mealKart. Your transaction has been completed, and the kitchen is preparing your food.</p>
+        
+        <div class="success-divider"></div>
+        
+        <div class="success-details-box text-left">
+            <h3>Order Details</h3>
+            <div class="success-detail-row">
+                <span>Order ID:</span>
+                <strong>#{{ order.id }}</strong>
+            </div>
+            <div class="success-detail-row">
+                <span>Restaurant Name:</span>
+                <strong>{{ order.hotel.name }}</strong>
+            </div>
+            <div class="success-detail-row">
+                <span>Transaction ID:</span>
+                <strong class="text-accent">{{ payment.transaction_id }}</strong>
+            </div>
+            <div class="success-detail-row">
+                <span>Total Amount paid:</span>
+                <strong>₹{{ order.grand_total }}</strong>
+            </div>
+            <div class="success-detail-row">
+                <span>Payment Method:</span>
+                <strong>{{ order.payment_method }}</strong>
+            </div>
+            <div class="success-detail-row">
+                <span>Delivery Address:</span>
+                <strong>{{ order.delivery_address }}</strong>
+            </div>
+        </div>
+
+        <div class="success-actions">
+            <a href="{% url 'order_tracking' order.id %}" class="btn btn-primary btn-block">
+                Track My Order <i class="fa-solid fa-route"></i>
+            </a>
+            <a href="{% url 'home' %}" class="btn-text btn-block text-center mt-2">
+                Back to Home <i class="fa-solid fa-house"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

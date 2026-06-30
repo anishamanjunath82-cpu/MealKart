@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us – mealKart{% endblock %}
+
+{% block content %}
+<div class="static-page-container">
+    <div class="static-card glass-panel fade-in">
+        <h2>About mealKart</h2>
+        <div class="static-content">
+            <p><strong>mealKart</strong> is a state-of-the-art full-stack food delivery application built to demonstrate modern web engineering and design principles. Inspired by premium global food applications like Zomato and Swiggy, mealKart integrates seamless frontend interactivity with a reliable Django backend database.</p>
+            
+            <h3>Our Core Technology Stack</h3>
+            <ul>
+                <li><strong>Backend:</strong> Python 3.12, Django MVC framework, SQLite ORM.</li>
+                <li><strong>Frontend:</strong> HTML5, Custom CSS3 grid layout, JavaScript Fetch API.</li>
+                <li><strong>Design System:</strong> Premium glassmorphism design, responsiveness, custom loaders, and micro-animations.</li>
+                <li><strong>Authentication:</strong> Django securely hashed passwords, remember sessions, and OTP simulations.</li>
+            </ul>
+
+            <h3>Our Features</h3>
+            <p>We provide live search filters, restaurant review submissions, dynamic coupon validation, session-based cart updates, localized mock delivery tracking, and customizable user profiles with order history logs.</p>
+            
+            <p class="text-center mt-3">
+                <a href="{% url 'home' %}" class="btn btn-primary">Start Exploring Foods</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

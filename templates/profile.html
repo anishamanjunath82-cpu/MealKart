@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile – mealKart{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h2 class="page-title"><i class="fa-solid fa-user-gear"></i> Account Settings</h2>
+
+    <div class="profile-layout">
+        
+        <!-- Sidebar Navigation Tabs -->
+        <div class="profile-tabs-sidebar glass-panel">
+            <div class="profile-summary-header">
+                <div class="user-avatar-large">
+                    {{ user.username.0|upper }}
+                </div>
+                <h3>{{ user.first_name|default:user.username }}</h3>
+                <p>{{ user.email }}</p>
+            </div>
+            
+            <nav class="profile-tabs-nav">
+                <button class="tab-nav-btn active" data-target="profile-edit-tab"><i class="fa-solid fa-user-pen"></i> Edit Profile</button>
+                <button class="tab-nav-btn" data-target="order-history-tab"><i class="fa-solid fa-clock-rotate-left"></i> Order History</button>
+                <button class="tab-nav-btn" data-target="favorites-tab"><i class="fa-solid fa-heart"></i> Favorite Foods</button>
+            </nav>
+        </div>
+
+        <!-- Dynamic Panels (Right Pane) -->
+        <div class="profile-panels-pane">
+            
+            <!-- Panel 1: Edit Profile Details -->
+            <div class="profile-panel active glass-panel" id="profile-edit-tab">
+                <h3>Personal Information</h3>
+                <form method="POST" action="{% url 'profile' %}" class="profile-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-row-grid">
+                        <div class="form-group">
+                            <label for="id_first_name">First Name</label>
+                            <input type="text" id="id_first_name" name="first_name" class="form-control" value="{{ form.first_name.value|default:'' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_last_name">Last Name</label>
+                            <input type="text" id="id_last_name" name="last_name" class="form-control" value="{{ form.last_name.value|default:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row-grid">
+                        <div class="form-group">
+                            <label for="id_email">Email Address</label>
+                            <input type="email" id="id_email" name="email" class="form-control" value="{{ form.email.value|default:'' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_phone_number">Phone Number</label>
+                            <input type="text" id="id_phone_number" name="phone_number" class="form-control" value="{{ form.phone_number.value|default:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row-grid">
+                        <div class="form-group">
+                            <label for="id_date_of_birth">Date of Birth</label>
+                            <input type="date" id="id_date_of_birth" name="date_of_birth" class="form-control" value="{{ form.date_of_birth.value|default:'' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="id_gender">Gender</label>
+                            {{ form.gender }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_saved_address">Default Delivery Address</label>
+                        {{ form.saved_address }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_landmark">Landmark</label>
+                        {{ form.landmark }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Changes <i class="fa-solid fa-floppy-disk"></i></button>
+                </form>
+            </div>
+
+            <!-- Panel 2: Order History -->
+            <div class="profile-panel glass-panel" id="order-history-tab">
+                <h3>Your Past Orders</h3>
+                
+                <div class="history-list">
+                    {% for order in orders %}
+                    <div class="order-card-history glass-panel-light">
+                        <div class="history-card-header">
+                            <div>
+                                <h4>{{ order.hotel.name }}</h4>
+                                <span class="order-timestamp">{{ order.order_date|date:"d M Y, H:i" }}</span>
+                            </div>
+                            <span class="order-history-status status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
+                        </div>
+                        
+                        <div class="history-card-items">
+                            {% for item in order.items.all %}
+                                <p class="hist-item-line">{{ item.quantity }} x {{ item.food_item.name }} (₹{{ item.price }})</p>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="history-divider"></div>
+                        
+                        <div class="history-card-footer">
+                            <div class="price-method-info">
+                                <span>Grand Total: <strong>₹{{ order.grand_total }}</strong></span>
+                                <span class="payment-badge"><i class="fa-solid fa-credit-card"></i> {{ order.payment_method }}</span>
+                            </div>
+                            <div class="history-actions">
+                                <a href="{% url 'reorder' order.id %}" class="btn btn-outline"><i class="fa-solid fa-arrow-rotate-left"></i> Reorder</a>
+                                {% if order.status != 'Delivered' %}
+                                <a href="{% url 'order_tracking' order.id %}" class="btn btn-primary"><i class="fa-solid fa-location-arrow"></i> Track</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="no-history text-center text-muted">
+                        <i class="fa-solid fa-box-open icon-xl mb-2"></i>
+                        <p>You haven't ordered anything yet!</p>
+                        <a href="{% url 'home' %}" class="btn btn-outline mt-2">Order Now</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Panel 3: Favorites List -->
+            <div class="profile-panel glass-panel" id="favorites-tab">
+                <h3>Favorite Food Items</h3>
+                <div class="foods-grid">
+                    {% for fav in favorites %}
+                    <div class="food-item-card glass-panel" id="fav-item-card-{{ fav.food_item.id }}">
+                        <div class="food-card-image">
+                            <img src="{{ fav.food_item.image.url }}" alt="{{ fav.food_item.name }}" onerror="this.src='/static/images/default_food.jpg'">
+                            <span class="veg-badge {% if fav.food_item.is_veg %}veg{% else %}non-veg{% endif %}"></span>
+                            <button class="favorite-heart-btn liked" data-food-id="{{ fav.food_item.id }}">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="food-card-info">
+                            <div class="food-card-title-row">
+                                <h4>{{ fav.food_item.name }}</h4>
+                                <span class="food-rating"><i class="fa-solid fa-star"></i> {{ fav.food_item.rating }}</span>
+                            </div>
+                            <p class="food-card-desc">{{ fav.food_item.description }}</p>
+                            <p class="hotel-owner">By {{ fav.food_item.hotel.name }}</p>
+                            <div class="food-card-price-row">
+                                <span class="food-price">₹{{ fav.food_item.price }}</span>
+                                <button class="btn btn-primary btn-add-to-cart" data-food-id="{{ fav.food_item.id }}">
+                                    <span>Add</span>
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="no-favorites text-center text-muted col-span-3">
+                        <i class="fa-regular fa-heart icon-xl mb-2"></i>
+                        <p>No favorites saved yet.</p>
+                        <a href="{% url 'home' %}" class="btn btn-outline mt-2">Explore Foods</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/cart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.tab-nav-btn');
+        const panels = document.querySelectorAll('.profile-panel');
+        
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetPanelId = btn.getAttribute('data-target');
+                
+                // Toggle active button class
+                tabButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Toggle active panel class
+                panels.forEach(p => {
+                    if (p.id === targetPanelId) {
+                        p.classList.add('active');
+                    } else {
+                        p.classList.remove('active');
+                    }
+                });
+            });
+        });
+        
+        // Handle direct linking to tabs using window hash
+        const hash = window.location.hash;
+        if (hash) {
+            let targetId = '';
+            if (hash === '#orders') targetId = 'order-history-tab';
+            if (hash === '#favourites') targetId = 'favorites-tab';
+            
+            if (targetId) {
+                const targetBtn = document.querySelector(`[data-target="${targetId}"]`);
+                if (targetBtn) targetBtn.click();
+            }
+        }
+    });
+</script>
+{% endblock %}

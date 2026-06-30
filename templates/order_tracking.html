@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Track Order #{{ order.id }} – mealKart{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tracking-layout {
+        display: block;
+        max-width: 750px;
+        margin: 0 auto;
+    }
+    .tracking-status-pane {
+        width: 100%;
+        margin-bottom: 25px;
+    }
+    .tracking-eta-box-custom {
+        background-color: var(--primary-glow);
+        padding: 18px;
+        border-radius: var(--radius-md);
+        text-align: center;
+        margin-top: 20px;
+        border: 1px solid var(--border-glass);
+    }
+    .eta-status-custom {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+    .eta-status-custom i {
+        color: var(--primary);
+        margin-right: 8px;
+        font-size: 18px;
+    }
+    .order-status-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: var(--bg-hover);
+        border: 1px solid var(--border-glass);
+        font-size: 13px;
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tracking-container">
+    <h2 class="page-title"><i class="fa-solid fa-route"></i> Order Status</h2>
+
+    <div class="tracking-layout">
+        
+        <!-- Tracking Stages & Partner Details -->
+        <div class="tracking-status-pane glass-panel">
+            <div class="tracking-header-info" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h3>Order #{{ order.id }}</h3>
+                    <span class="restaurant-name">From {{ order.hotel.name }}</span>
+                </div>
+                <div class="order-status-badge">
+                    Status: <strong class="text-accent">{{ order.get_status_display }}</strong>
+                </div>
+            </div>
+
+            <!-- Order ETA / Details -->
+            <div class="tracking-eta-box-custom">
+                {% if order.status == 'Delivered' %}
+                <div class="eta-status-custom text-success">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Order Delivered at {{ order.order_date|date:"H:i" }}</span>
+                </div>
+                {% else %}
+                <div class="eta-status-custom">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Estimated Arrival Time: <strong>{{ order.estimated_arrival_time }} Mins</strong></span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Progress Timeline -->
+            <div class="timeline-wrapper" style="margin-top: 20px;">
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: {{ progress_percentage }}%;"></div>
+                </div>
+                
+                <div class="timeline-steps">
+                    <div class="timeline-step {% if progress_percentage >= 16 %}completed{% endif %}">
+                        <div class="step-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                        <span class="step-label">Placed</span>
+                    </div>
+                    <div class="timeline-step {% if progress_percentage >= 33 %}completed{% endif %}">
+                        <div class="step-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <span class="step-label">Accepted</span>
+                    </div>
+                    <div class="timeline-step {% if progress_percentage >= 50 %}completed{% endif %}">
+                        <div class="step-icon"><i class="fa-solid fa-fire-burner"></i></div>
+                        <span class="step-label">Preparing</span>
+                    </div>
+                    <div class="timeline-step {% if progress_percentage >= 66 %}completed{% endif %}">
+                        <div class="step-icon"><i class="fa-solid fa-box-open"></i></div>
+                        <span class="step-label">Picked Up</span>
+                    </div>
+                    <div class="timeline-step {% if progress_percentage >= 83 %}completed{% endif %}">
+                        <div class="step-icon"><i class="fa-solid fa-motorcycle"></i></div>
+                        <span class="step-label">Out for Delivery</span>
+                    </div>
+                    <div class="timeline-step {% if progress_percentage >= 100 %}completed{% endif %}">
+                        <div class="step-icon"><i class="fa-solid fa-house-circle-check"></i></div>
+                        <span class="step-label">Delivered</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tracking-divider"></div>
+
+            <!-- Delivery Partner Information -->
+            {% if order.delivery_partner %}
+            <div class="partner-card glass-panel-light">
+                <div class="partner-avatar">
+                    {% if order.delivery_partner.photo %}
+                        <img src="{{ order.delivery_partner.photo.url }}" alt="{{ order.delivery_partner.name }}" onerror="this.src='/static/images/default_partner.jpg'">
+                    {% else %}
+                        <img src="/static/images/default_partner.jpg" alt="Partner Avatar">
+                    {% endif %}
+                </div>
+                <div class="partner-info">
+                    <h4>{{ order.delivery_partner.name }}</h4>
+                    <span class="partner-rating"><i class="fa-solid fa-star"></i> {{ order.delivery_partner.rating }} (Delivery Hero)</span>
+                    <p class="vehicle-details">{{ order.delivery_partner.vehicle_type }} – <strong class="text-accent">{{ order.delivery_partner.vehicle_number }}</strong></p>
+                </div>
+                <div class="partner-actions">
+                    <a href="tel:{{ order.delivery_partner.phone_number }}" class="btn-call-partner"><i class="fa-solid fa-phone"></i> Call Hero</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="partner-card glass-panel-light">
+                <div class="partner-avatar">
+                    <i class="fa-solid fa-user-ninja placeholder-avatar-icon"></i>
+                </div>
+                <div class="partner-info">
+                    <h4>Finding Delivery Hero...</h4>
+                    <p class="vehicle-details">Assigning a delivery partner to your order.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Automatically poll this page every 20 seconds to simulate live progress
+    setTimeout(function() {
+        window.location.reload();
+    }, 20000);
+</script>
+{% endblock %}

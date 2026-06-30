@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ hotel.name }} Menu – mealKart{% endblock %}
+
+{% block content %}
+<div class="menu-container">
+    
+    <!-- Hotel Info Hero Section -->
+    <section class="hotel-hero glass-panel">
+        <div class="hotel-hero-image">
+            <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}" onerror="this.src='/static/images/default_hotel.jpg'">
+        </div>
+        <div class="hotel-hero-details">
+            <div class="hotel-hero-title">
+                <h2>{{ hotel.name }}</h2>
+                <div class="hotel-rating-large">
+                    <span>{{ avg_rating }}</span> <i class="fa-solid fa-star"></i>
+                    <span class="reviews-count">({{ reviews.count }} Reviews)</span>
+                </div>
+            </div>
+            <p class="hotel-hero-desc">{{ hotel.description }}</p>
+            <p class="hotel-hero-address"><i class="fa-solid fa-location-dot"></i> {{ hotel.address }}</p>
+            
+            <div class="hotel-stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Delivery Time</span>
+                    <span class="stat-value"><i class="fa-solid fa-clock"></i> {{ hotel.delivery_time }} Mins</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Delivery Charge</span>
+                    <span class="stat-value"><i class="fa-solid fa-motorcycle"></i> ₹{{ hotel.delivery_charges }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Distance</span>
+                    <span class="stat-value"><i class="fa-solid fa-route"></i> {{ hotel.distance }} km</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Menu Layout (Food items left, review section right/bottom) -->
+    <div class="menu-content-layout">
+        
+        <!-- Food Items Pane -->
+        <div class="menu-items-pane">
+            
+            <!-- Filters & Menu Tabs -->
+            <div class="menu-filter-bar glass-panel-light">
+                <div class="menu-type-filters">
+                    <button class="filter-btn active" id="btn-filter-all">All Items</button>
+                    <button class="filter-btn" id="btn-filter-veg"><i class="fa-solid fa-leaf text-success"></i> Veg Only</button>
+                    <button class="filter-btn" id="btn-filter-nonveg"><i class="fa-solid fa-drumstick-bite text-danger"></i> Non-Veg Only</button>
+                </div>
+                <div class="menu-search-sub">
+                    <input type="text" id="menu-item-search" placeholder="Search in menu..." autocomplete="off">
+                </div>
+            </div>
+
+            <!-- Foods Grid -->
+            <div class="foods-grid" id="menu-foods-grid">
+                {% for food in food_items %}
+                <div class="food-item-card glass-panel menu-food-card" data-veg="{% if food.is_veg %}true{% else %}false{% endif %}" data-name="{{ food.name|lower }}">
+                    <div class="food-card-image">
+                        <img src="{{ food.image.url }}" alt="{{ food.name }}" onerror="this.src='/static/images/default_food.jpg'">
+                        <span class="veg-badge {% if food.is_veg %}veg{% else %}non-veg{% endif %}"></span>
+                        <button class="favorite-heart-btn {% if food.id in fav_ids %}liked{% endif %}" data-food-id="{{ food.id }}">
+                            <i class="fa-{% if food.id in fav_ids %}solid{% else %}regular{% endif %} fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="food-card-info">
+                        <div class="food-card-title-row">
+                            <h4>{{ food.name }}</h4>
+                            <span class="food-rating"><i class="fa-solid fa-star"></i> {{ food.rating }}</span>
+                        </div>
+                        <p class="food-card-desc">{{ food.description }}</p>
+                        <div class="food-card-meta">
+                            <span class="meta-tag"><i class="fa-solid fa-stopwatch"></i> {{ food.preparation_time }} mins</span>
+                            <span class="meta-tag cuisine-tag">{{ food.category.name }}</span>
+                        </div>
+                        <div class="food-card-price-row">
+                            <span class="food-price">₹{{ food.price }}</span>
+                            <button class="btn btn-primary btn-add-to-cart" data-food-id="{{ food.id }}">
+                                <span>Add to Cart</span>
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="no-items">This restaurant hasn't added any menu items yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Reviews & Feedback Pane -->
+        <div class="menu-reviews-pane">
+            <div class="reviews-header glass-panel-light">
+                <h3>Customer Reviews</h3>
+            </div>
+            
+            <!-- Submit Review Form -->
+            <div class="submit-review-card glass-panel">
+                <h4>Rate your experience</h4>
+                <form method="POST" action="{% url 'hotel_menu' hotel.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="rating-select">Rating (Stars)</label>
+                        <div class="rating-stars-input">
+                            <select name="rating" id="rating-select" class="form-control" required>
+                                <option value="5">★★★★★ (5 Stars)</option>
+                                <option value="4">★★★★☆ (4 Stars)</option>
+                                <option value="3">★★★☆☆ (3 Stars)</option>
+                                <option value="2">★★☆☆☆ (2 Stars)</option>
+                                <option value="1">★☆☆☆☆ (1 Star)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment-text">Comment</label>
+                        <textarea name="comment" id="comment-text" class="form-control" rows="3" placeholder="Share your experience with this restaurant..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Submit Review</button>
+                </form>
+            </div>
+
+            <!-- Reviews List -->
+            <div class="reviews-list">
+                {% for review in reviews %}
+                <div class="review-item glass-panel-light">
+                    <div class="review-meta">
+                        <div class="reviewer-avatar">
+                            {{ review.user.username.0|upper }}
+                        </div>
+                        <div class="reviewer-details">
+                            <h5>{{ review.user.first_name|default:review.user.username }}</h5>
+                            <span class="review-date">{{ review.created_at|date:"d M Y" }}</span>
+                        </div>
+                        <div class="review-stars">
+                            {% for i in "12345" %}
+                                <i class="fa-solid fa-star {% if forloop.counter <= review.rating %}text-warning{% else %}text-muted{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="review-comment">{{ review.comment }}</p>
+                </div>
+                {% empty %}
+                <p class="no-reviews text-center text-muted">No reviews yet. Be the first to review!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/cart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnAll = document.getElementById('btn-filter-all');
+        const btnVeg = document.getElementById('btn-filter-veg');
+        const btnNonVeg = document.getElementById('btn-filter-nonveg');
+        const searchInput = document.getElementById('menu-item-search');
+        
+        const foodCards = document.querySelectorAll('.menu-food-card');
+        
+        let filterType = 'all'; // 'all', 'veg', 'nonveg'
+        let searchQuery = '';
+        
+        function applyFilters() {
+            foodCards.forEach(card => {
+                const isVeg = card.getAttribute('data-veg') === 'true';
+                const name = card.getAttribute('data-name');
+                
+                let matchesType = true;
+                if (filterType === 'veg') {
+                    matchesType = isVeg;
+                } else if (filterType === 'nonveg') {
+                    matchesType = !isVeg;
+                }
+                
+                let matchesSearch = name.includes(searchQuery);
+                
+                if (matchesType && matchesSearch) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+        
+        btnAll.addEventListener('click', function() {
+            btnAll.classList.add('active');
+            btnVeg.classList.remove('active');
+            btnNonVeg.classList.remove('active');
+            filterType = 'all';
+            applyFilters();
+        });
+        
+        btnVeg.addEventListener('click', function() {
+            btnAll.classList.remove('active');
+            btnVeg.classList.add('active');
+            btnNonVeg.classList.remove('active');
+            filterType = 'veg';
+            applyFilters();
+        });
+        
+        btnNonVeg.addEventListener('click', function() {
+            btnAll.classList.remove('active');
+            btnVeg.classList.remove('active');
+            btnNonVeg.classList.add('active');
+            filterType = 'nonveg';
+            applyFilters();
+        });
+        
+        searchInput.addEventListener('input', function(e) {
+            searchQuery = e.target.value.toLowerCase().trim();
+            applyFilters();
+        });
+    });
+</script>
+{% endblock %}

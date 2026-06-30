@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}mealKart – Full Stack Food Delivery{% endblock %}</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/responsive.css">
+    <link rel="stylesheet" href="/static/css/animation.css">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="light-mode">
+    <!-- CSRF Token for JavaScript Fetch requests -->
+    {% csrf_token %}
+
+    <!-- Top Navigation Bar -->
+    <header class="navbar-header">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="nav-logo">
+                <i class="fa-solid fa-bolt logo-icon"></i>
+                <span class="logo-text">mealKart <span class="accent-text">Pro</span></span>
+            </a>
+            
+            {% if user.is_authenticated %}
+            <!-- Search bar inside header for logged in users -->
+            <div class="nav-search-bar">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="global-search-input" placeholder="Search for food, cuisines, hotels..." autocomplete="off">
+                <div id="search-dropdown-results" class="search-results-dropdown hidden"></div>
+            </div>
+            {% endif %}
+
+            <div class="nav-actions">
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle-btn" class="nav-action-btn" title="Toggle Dark/Light Mode">
+                    <i class="fa-solid fa-moon theme-icon"></i>
+                </button>
+                
+                {% if user.is_authenticated %}
+                <!-- Notifications -->
+                <div class="notifications-dropdown-container">
+                    <button class="nav-action-btn" id="notif-toggle-btn" title="Notifications">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="badge badge-pulse">1</span>
+                    </button>
+                    <div id="notif-dropdown" class="dropdown-menu hidden">
+                        <div class="dropdown-header">Notifications</div>
+                        <div class="dropdown-item notif-item unread">
+                            <i class="fa-solid fa-circle-check text-success"></i>
+                            <div>
+                                <p class="notif-msg">Welcome to mealKart! Explore our festival offers.</p>
+                                <span class="notif-time">Just now</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shopping Cart Link -->
+                <a href="{% url 'cart' %}" class="nav-cart-btn" title="Shopping Cart">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-badge-qty" id="global-cart-qty">{{ cart_count|default:0 }}</span>
+                </a>
+
+                <!-- User Profile Dropdown -->
+                <div class="profile-dropdown-container">
+                    <button class="nav-profile-trigger" id="profile-menu-btn">
+                        <div class="profile-avatar">
+                            {% if user.first_name %}
+                                {{ user.first_name.0|upper }}
+                            {% else %}
+                                {{ user.username.0|upper }}
+                            {% endif %}
+                        </div>
+                        <span class="nav-username">{{ user.first_name|default:user.username }}</span>
+                        <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                    </button>
+                    <div id="profile-dropdown" class="dropdown-menu hidden">
+                        <a href="{% url 'profile' %}"><i class="fa-solid fa-user"></i> My Profile</a>
+                        <a href="{% url 'profile' %}#orders"><i class="fa-solid fa-clock-rotate-left"></i> Order History</a>
+                        <a href="{% url 'profile' %}#favourites"><i class="fa-solid fa-heart"></i> Favourites</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'logout' %}" class="logout-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Message Alerts (Toasts) -->
+    {% if messages %}
+    <div class="toast-container" id="django-messages-container">
+        {% for message in messages %}
+        <div class="toast-alert {{ message.tags }}">
+            <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% elif message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-info{% endif %} toast-icon"></i>
+            <span class="toast-message">{{ message }}</span>
+            <button class="toast-close-btn" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Block -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <i class="fa-solid fa-bolt logo-icon"></i>
+                    <span>mealKart</span>
+                </div>
+                <p class="footer-desc">Delivering happiness to your doorstep with premium quality food from local favorites.</p>
+                <div class="footer-socials">
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
+                    <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Blogs</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>For Foodies</h4>
+                <ul>
+                    <li><a href="{% url 'home' %}">Trending Foods</a></li>
+                    <li><a href="{% url 'profile' %}#favourites">Favorites List</a></li>
+                    <li><a href="{% url 'cart' %}">Cart Page</a></li>
+                    <li><a href="#">Cuisines Near Me</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Refund Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 mealKart. Designed & Developed for college final-year demonstration. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Core Scripts -->
+    <script src="/static/js/script.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

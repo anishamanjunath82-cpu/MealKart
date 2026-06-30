@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us – mealKart{% endblock %}
+
+{% block content %}
+<div class="static-page-container">
+    <div class="static-card glass-panel fade-in">
+        <h2>Contact Us</h2>
+        <p class="text-center text-muted">Have queries, feedback, or partner requests? Drop us a line below.</p>
+        
+        <div class="contact-layout mt-3">
+            <!-- Details -->
+            <div class="contact-details-box glass-panel-light">
+                <h3>Our Offices</h3>
+                <p><i class="fa-solid fa-location-dot text-accent"></i> mealKart HQ, Tech Boulevard, Bangalore, India</p>
+                <p><i class="fa-solid fa-envelope text-accent"></i> support@mealkart.demo</p>
+                <p><i class="fa-solid fa-phone text-accent"></i> +91 98765 43210</p>
+                <p><i class="fa-solid fa-clock text-accent"></i> 24/7 Delivery Support</p>
+            </div>
+            
+            <!-- Message Form -->
+            <div class="contact-form-box">
+                <form method="POST" action="{% url 'contact' %}" class="auth-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="E.g. Jatin" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="E.g. jatin@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" class="form-control" placeholder="E.g. Support request" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" class="form-control" rows="4" placeholder="How can we help you?" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Send Message <i class="fa-solid fa-envelope-open-text"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

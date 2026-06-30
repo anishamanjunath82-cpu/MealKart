@@ -1,0 +1,205 @@
+/* mealKart - Responsive Stylesheets */
+
+/* Large Tablets & Small Laptops (Max 1024px) */
+@media screen and (max-width: 1024px) {
+    .nav-container {
+        padding: 0 15px;
+    }
+    
+    .hotels-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1-fraction));
+    }
+    
+    .cart-grid-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .checkout-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Medium Tablets & Mobile Landscape (Max 768px) */
+@media screen and (max-width: 768px) {
+    .navbar-header {
+        height: auto;
+        padding: 10px 0;
+    }
+    
+    .nav-container {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .nav-search-bar {
+        order: 3;
+        width: 100%;
+        max-width: none;
+        margin: 5px 0;
+    }
+    
+    .nav-actions {
+        margin-left: auto;
+    }
+    
+    .nav-username {
+        display: none; /* Hide username text, only show avatar on tablets/mobiles */
+    }
+    
+    .hero-carousel-section {
+        height: 350px;
+    }
+    
+    .slide-content h1 {
+        font-size: 2rem;
+    }
+    
+    .slide-content p {
+        font-size: 0.95rem;
+    }
+    
+    .category-bubble {
+        padding: 10px 15px;
+        min-width: 90px;
+    }
+    
+    .menu-detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        text-align: left;
+    }
+    
+    .menu-hotel-img {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .menu-grid-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .order-tracking-card {
+        padding: 20px;
+    }
+    
+    .tracking-timeline {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 20px;
+        position: relative;
+    }
+    
+    .tracking-timeline::before {
+        content: '';
+        position: absolute;
+        left: 31px;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--bg-hover);
+        z-index: 1;
+    }
+    
+    .timeline-step {
+        flex-direction: row;
+        width: 100%;
+        margin-bottom: 25px;
+        text-align: left;
+        gap: 15px;
+    }
+    
+    .timeline-step::after {
+        display: none; /* Hide horizontal connector lines */
+    }
+    
+    .step-icon-wrapper {
+        z-index: 2;
+        margin-bottom: 0;
+    }
+    
+    .profile-tabs-container {
+        flex-direction: column;
+    }
+    
+    .profile-sidebar-tabs {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 2px solid var(--bg-hover);
+        padding-bottom: 10px;
+    }
+    
+    .tab-btn {
+        white-space: nowrap;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        padding: 10px 15px;
+    }
+    
+    .tab-btn.active {
+        border-left: none;
+        border-bottom: 3px solid var(--primary-color);
+        background: transparent;
+    }
+    
+    .profile-main-content {
+        padding: 15px 0;
+    }
+}
+
+/* Extra Small Phones (Max 480px) */
+@media screen and (max-width: 480px) {
+    .logo-text {
+        font-size: 1.1rem;
+    }
+    
+    .hero-carousel-section {
+        height: 280px;
+    }
+    
+    .slide-content h1 {
+        font-size: 1.5rem;
+    }
+    
+    .slide-content p {
+        display: none; /* Hide subtext on very small screens */
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+    
+    .coupon-card {
+        min-width: 200px;
+        padding: 10px;
+    }
+    
+    .hotels-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cart-summary-card {
+        padding: 15px;
+    }
+    
+    .cart-item-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px 0;
+    }
+    
+    .cart-item-img {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .cart-item-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

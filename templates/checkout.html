@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout – mealKart{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <h2 class="page-title"><i class="fa-solid fa-truck-ramp-box"></i> Checkout Details</h2>
+
+    <div class="checkout-layout">
+        
+        <!-- Delivery Details Form (Left Pane) -->
+        <div class="delivery-details-pane glass-panel">
+            <div class="panel-header">
+                <h3><i class="fa-solid fa-location-dot text-accent"></i> Shipping Address</h3>
+                <p>Provide your delivery location details below</p>
+            </div>
+            
+            <form method="POST" action="{% url 'checkout' %}" class="checkout-form" id="checkout-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="id_phone_number">Contact Phone Number</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-phone input-icon"></i>
+                        <input type="text" id="id_phone_number" name="phone_number" class="form-control" placeholder="Mobile number" value="{{ profile.phone_number|default:'' }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_delivery_address">Complete Delivery Address</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-house-chimney input-icon"></i>
+                        <textarea id="id_delivery_address" name="delivery_address" class="form-control" rows="3" placeholder="Flat, House No, Building, Street Address" required>{{ profile.saved_address|default:'' }}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-row-grid">
+                    <div class="form-group">
+                        <label for="id_landmark">Landmark</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-map-pin input-icon"></i>
+                            <input type="text" id="id_landmark" name="landmark" class="form-control" placeholder="E.g. Near bus stop" value="{{ profile.landmark|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_instructions">Delivery Instructions (Optional)</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-circle-info input-icon"></i>
+                        <textarea id="id_instructions" name="instructions" class="form-control" rows="2" placeholder="E.g. Leave at door, Don't ring bell, Call on arrival"></textarea>
+                    </div>
+                </div>
+
+                <div class="checkout-actions">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <span>Proceed to Payment</span>
+                        <i class="fa-solid fa-credit-card"></i>
+                    </button>
+                    <a href="{% url 'cart' %}" class="btn-text btn-block text-center mt-2">
+                        <i class="fa-solid fa-chevron-left"></i> Back to Cart
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sidebar Summary (Right Pane) -->
+        <div class="order-summary-pane glass-panel-light">
+            <h3>Order Summary</h3>
+            <div class="summary-items-list">
+                {% for item in items %}
+                <div class="summary-item">
+                    <span class="item-name">{{ item.food_item.name }} <strong class="text-accent">x{{ item.quantity }}</strong></span>
+                    <span class="item-price">₹{{ item.food_item.price }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="summary-divider"></div>
+            
+            <div class="summary-total-row">
+                <span>Grand Total:</span>
+                <span class="grand-total-val">₹{{ grand_total }}</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

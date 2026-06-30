@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up – mealKart{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card signup-card glass-panel fade-in">
+        <div class="auth-header">
+            <i class="fa-solid fa-bolt auth-icon"></i>
+            <h2>Join mealKart</h2>
+            <p>Create a foodie account to explore top cuisines</p>
+        </div>
+        
+        <form method="POST" action="{% url 'signup' %}" class="auth-form" id="signup-form" novalidate>
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="form-row-grid">
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label for="id_full_name">Full Name</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-user-tag input-icon"></i>
+                        {{ form.full_name }}
+                    </div>
+                    {% if form.full_name.errors %}
+                    <span class="field-error">{{ form.full_name.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="id_email">Email Address</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        {{ form.email }}
+                    </div>
+                    {% if form.email.errors %}
+                    <span class="field-error">{{ form.email.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row-grid">
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label for="id_phone_number">Phone Number</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-phone input-icon"></i>
+                        {{ form.phone_number }}
+                    </div>
+                    {% if form.phone_number.errors %}
+                    <span class="field-error">{{ form.phone_number.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="form-group">
+                    <label for="id_date_of_birth">Date of Birth</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-calendar input-icon"></i>
+                        {{ form.date_of_birth }}
+                    </div>
+                    {% if form.date_of_birth.errors %}
+                    <span class="field-error">{{ form.date_of_birth.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row-grid">
+                <!-- Gender -->
+                <div class="form-group">
+                    <label for="id_gender">Gender</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-venus-mars input-icon"></i>
+                        {{ form.gender }}
+                    </div>
+                    {% if form.gender.errors %}
+                    <span class="field-error">{{ form.gender.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Username -->
+                <div class="form-group">
+                    <label for="id_username">Username</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-user input-icon"></i>
+                        {{ form.username }}
+                    </div>
+                    {% if form.username.errors %}
+                    <span class="field-error">{{ form.username.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Delivery Address (Full Width) -->
+            <div class="form-group">
+                <label for="id_saved_address">Delivery Address</label>
+                <div class="input-icon-wrapper" style="align-items: flex-start;">
+                    <i class="fa-solid fa-map-location-dot input-icon" style="top: 15px;"></i>
+                    {{ form.saved_address }}
+                </div>
+                {% if form.saved_address.errors %}
+                <span class="field-error">{{ form.saved_address.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <!-- Landmark (Full Width) -->
+            <div class="form-group">
+                <label for="id_landmark">Landmark (Optional)</label>
+                <div class="input-icon-wrapper">
+                    <i class="fa-solid fa-monument input-icon"></i>
+                    {{ form.landmark }}
+                </div>
+                {% if form.landmark.errors %}
+                <span class="field-error">{{ form.landmark.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-row-grid">
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="id_password">Password</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" name="password" id="id_password" placeholder="Password" class="form-control" required minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&#]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
+                    </div>
+                    {% if form.password.errors %}
+                    <span class="field-error">{{ form.password.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label for="id_confirm_password">Confirm Password</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-circle-check input-icon"></i>
+                        <input type="password" name="confirm_password" id="id_confirm_password" placeholder="Confirm Password" class="form-control" required>
+                    </div>
+                    {% if form.confirm_password.errors %}
+                    <span class="field-error">{{ form.confirm_password.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="password-strength-hint mb-3" style="font-size: 0.8rem; opacity: 0.8; color: var(--text-color); margin-top: -5px; padding: 5px 10px; border-radius: 6px; background: var(--bg-hover); border-left: 3px solid var(--primary-color);">
+                <i class="fa-solid fa-circle-info text-accent"></i> <strong>Strong Password Required:</strong> Minimum 8 characters, with at least one uppercase letter, one lowercase letter, one digit, and one special character (e.g., @, $, !, %, *, ?, &, #).
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block auth-btn mt-3">
+                <span>Sign Up</span>
+                <i class="fa-solid fa-user-plus"></i>
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{% url 'login' %}" class="accent-link">Sign In</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

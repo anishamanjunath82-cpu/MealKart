@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% block title %}mealKart – Order Food Online{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    
+    <!-- Hero Banner Carousel -->
+    <section class="hero-carousel-section">
+        <div class="carousel-container" id="hero-slider">
+            <div class="carousel-wrapper">
+                <!-- Slide 1 -->
+                <div class="carousel-slide active" style="background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%), url('/static/images/hero_biryani.jpg') center/cover no-repeat;">
+                    <div class="slide-content">
+                        <span class="slide-badge">FESTIVAL SPLIT</span>
+                        <h1>Craving Delicious Biryani?</h1>
+                        <p>Get flat 50% off on your first 3 orders. Delivered steaming hot!</p>
+                        <a href="#hotels-anchor" class="btn btn-primary">Order Now <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="carousel-slide" style="background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%), url('/static/images/hero_pizza.jpg') center/cover no-repeat;">
+                    <div class="slide-content">
+                        <span class="slide-badge">SUPER SAVE</span>
+                        <h1>Cheesy Pizza Combos</h1>
+                        <p>Buy 1 Pizza Get 1 Free! Valid only for today. Grab yours now!</p>
+                        <a href="#hotels-anchor" class="btn btn-primary">Explore Offers <i class="fa-solid fa-pizza-slice"></i></a>
+                    </div>
+                </div>
+                <!-- Slide 3 -->
+                <div class="carousel-slide" style="background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%), url('/static/images/hero_burger.jpg') center/cover no-repeat;">
+                    <div class="slide-content">
+                        <span class="slide-badge">FREE DELIVERY</span>
+                        <h1>Gourmet Juicy Burgers</h1>
+                        <p>Order above ₹199 and get free delivery straight to your door.</p>
+                        <a href="#hotels-anchor" class="btn btn-primary">View Restaurants <i class="fa-solid fa-burger"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slider Controls -->
+            <button class="slider-arrow prev" id="slider-prev-btn"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="slider-arrow next" id="slider-next-btn"><i class="fa-solid fa-chevron-right"></i></button>
+            
+            <div class="slider-dots" id="slider-dots-container"></div>
+        </div>
+    </section>
+
+    <!-- Coupons & Offers Horizontal Bar -->
+    <section class="offers-section">
+        <div class="section-header">
+            <h3>Available Coupons & Offers</h3>
+            <span class="view-all">Swipe to view all</span>
+        </div>
+        <div class="offers-grid">
+            {% for coupon in coupons %}
+            <div class="coupon-card glass-panel-light">
+                <div class="coupon-icon">
+                    <i class="fa-solid fa-tags"></i>
+                </div>
+                <div class="coupon-info">
+                    <h5 class="coupon-code">{{ coupon.code }}</h5>
+                    <p class="coupon-desc">{{ coupon.description|default:"Discount offer" }}</p>
+                    <span class="coupon-min">Min Order: ₹{{ coupon.min_purchase_amount }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="coupon-card glass-panel-light">
+                <div class="coupon-icon"><i class="fa-solid fa-percent"></i></div>
+                <div class="coupon-info">
+                    <h5 class="coupon-code">FREEDEL</h5>
+                    <p class="coupon-desc">Free Delivery on all orders above ₹500.</p>
+                    <span class="coupon-min">Auto-applied</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Food Categories Horizontal Filter -->
+    <section class="categories-section">
+        <div class="section-header">
+            <h3>What's on your mind?</h3>
+        </div>
+        <div class="categories-container scroll-x" id="categories-list">
+            <button class="category-bubble active" data-category-id="">
+                <div class="category-icon-wrapper">
+                    <i class="fa-solid fa-utensils"></i>
+                </div>
+                <span>All Foods</span>
+            </button>
+            {% for cat in categories %}
+            <button class="category-bubble" data-category-id="{{ cat.id }}" data-category-name="{{ cat.name }}">
+                <div class="category-icon-wrapper">
+                    {% if cat.name|lower == 'veg' %}
+                        <i class="fa-solid fa-leaf text-success"></i>
+                    {% elif cat.name|lower == 'non-veg' %}
+                        <i class="fa-solid fa-drumstick-bite text-danger"></i>
+                    {% elif cat.name|lower == 'pizza' %}
+                        <i class="fa-solid fa-pizza-slice"></i>
+                    {% elif cat.name|lower == 'burgers' or cat.name|lower == 'burger' %}
+                        <i class="fa-solid fa-burger"></i>
+                    {% elif cat.name|lower == 'drinks' or cat.name|lower == 'drinks' %}
+                        <i class="fa-solid fa-wine-glass-empty"></i>
+                    {% elif cat.name|lower == 'ice cream' or cat.name|lower == 'desserts' %}
+                        <i class="fa-solid fa-ice-cream"></i>
+                    {% else %}
+                        <i class="fa-solid fa-bowl-food"></i>
+                    {% endif %}
+                </div>
+                <span>{{ cat.name }}</span>
+            </button>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Dynamic Food Items (Filtered when category clicked or search triggered) -->
+    <section class="filtered-foods-section hidden" id="filtered-foods-container">
+        <div class="section-header">
+            <h3 id="filtered-section-title">Search Results</h3>
+            <button class="btn-text" id="clear-filters-btn"><i class="fa-solid fa-xmark"></i> Clear</button>
+        </div>
+        <div class="foods-grid" id="filtered-foods-grid">
+            <!-- Dynamically populated via search.js -->
+        </div>
+    </section>
+
+    <!-- Trending Section -->
+    <section class="trending-section">
+        <div class="section-header">
+            <h3>Trending Food Items</h3>
+            <span class="subtitle">Our most popular selections</span>
+        </div>
+        <div class="trending-container scroll-x">
+            {% for food in trending_foods %}
+            <div class="trending-card glass-panel">
+                <div class="trending-img-wrapper">
+                    <img src="{{ food.image.url }}" alt="{{ food.name }}" onerror="this.src='/static/images/default_food.jpg'">
+                    <span class="veg-badge {% if food.is_veg %}veg{% else %}non-veg{% endif %}"></span>
+                    <button class="favorite-heart-btn {% if food.id in fav_ids %}liked{% endif %}" data-food-id="{{ food.id }}">
+                        <i class="fa-{% if food.id in fav_ids %}solid{% else %}regular{% endif %} fa-heart"></i>
+                    </button>
+                </div>
+                <div class="trending-details">
+                    <div class="trending-meta">
+                        <span class="food-category-tag">{{ food.category.name }}</span>
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> {{ food.rating }}</div>
+                    </div>
+                    <h4>{{ food.name }}</h4>
+                    <p class="hotel-owner">By {{ food.hotel.name }}</p>
+                    <div class="trending-price-action">
+                        <span class="price">₹{{ food.price }}</span>
+                        <button class="btn-add-to-cart" data-food-id="{{ food.id }}">
+                            <span class="plus-icon">+</span> Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>No trending items available right now.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Combo Meal Section -->
+    <section class="combos-section">
+        <div class="section-header">
+            <h3>Great Value Combos</h3>
+            <span class="subtitle">Complete meals with smart discounts</span>
+        </div>
+        <div class="combos-grid">
+            {% for combo in combos %}
+            <div class="combo-meal-card glass-panel">
+                <div class="combo-image">
+                    <img src="{{ combo.image.url }}" alt="{{ combo.name }}" onerror="this.src='/static/images/default_combo.jpg'">
+                </div>
+                <div class="combo-details">
+                    <h4>{{ combo.name }}</h4>
+                    <p class="combo-items-desc">{{ combo.description }}</p>
+                    <div class="combo-pricing">
+                        <span class="discount-price">₹{{ combo.discount_price }}</span>
+                        <span class="original-price">₹{{ combo.price }}</span>
+                    </div>
+                    <div class="combo-action">
+                        <!-- Add each food item in the combo to cart dynamically -->
+                        <button class="btn btn-outline btn-block btn-combo-add" data-items-json='[{% for item in combo.food_items.all %}"{{ item.id }}"{% if not forloop.last %},{% endif %}{% endfor %}]'>
+                            Add Combo <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Restaurants Section -->
+    <section class="hotels-section" id="hotels-anchor">
+        <div class="section-header">
+            <h3>Popular Restaurants</h3>
+            <span class="subtitle">Order from your favorite kitchens</span>
+        </div>
+        <div class="hotels-grid">
+            {% for hotel in hotels %}
+            <a href="{% url 'hotel_menu' hotel.id %}" class="hotel-card glass-panel fade-in">
+                <div class="hotel-image-wrapper">
+                    <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}" onerror="this.src='/static/images/default_hotel.jpg'">
+                    {% if hotel.featured %}
+                    <span class="featured-badge">Featured</span>
+                    {% endif %}
+                </div>
+                <div class="hotel-info">
+                    <div class="hotel-title-row">
+                        <h4>{{ hotel.name }}</h4>
+                        <div class="hotel-rating-badge {% if hotel.rating >= 4.0 %}rating-high{% else %}rating-mid{% endif %}">
+                            <span>{{ hotel.rating }}</span> <i class="fa-solid fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="hotel-desc">{{ hotel.description|truncatewords:8 }}</p>
+                    <div class="hotel-delivery-row">
+                        <span><i class="fa-solid fa-clock"></i> {{ hotel.delivery_time }} mins</span>
+                        <span><i class="fa-solid fa-motorcycle"></i> ₹{{ hotel.delivery_charges }}</span>
+                        <span><i class="fa-solid fa-route"></i> {{ hotel.distance }} km</span>
+                    </div>
+                    <div class="hotel-tags">
+                        {% if hotel.is_veg_only %}
+                        <span class="tag-veg"><i class="fa-solid fa-leaf"></i> Pure Veg</span>
+                        {% endif %}
+                        {% if hotel.has_non_veg %}
+                        <span class="tag-nonveg"><i class="fa-solid fa-drumstick-bite"></i> Non-Veg Available</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <p>No restaurants found. Please contact the administrator.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/slider.js"></script>
+<script src="/static/js/cart.js"></script>
+<script src="/static/js/search.js"></script>
+{% endblock %}
