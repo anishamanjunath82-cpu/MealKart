@@ -84,6 +84,6 @@ http://127.0.0.1:8000/
 
 Bachelor of Engineering (EEE)
 
-VVCE
+PESCE
 
-Academic Full-Stack Django Project
+Full-Stack Django Project
